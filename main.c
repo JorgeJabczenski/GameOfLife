@@ -3,90 +3,92 @@
 #include <time.h>
 #include <ncurses.h>
 
-#define VIVO  '@'
+#define VIVO '@'
 #define MORTO ' '
 
-int
-main (int argc, char **argv)
+/* Aloca espaço para uma matriz */
+int **alocar_matriz(int lin, int col)
 {
-  srand (time (NULL));
+  int **matriz;
+  matriz = malloc(sizeof(int *) * lin);
+  for (int i = 0; i < lin; i++)
+    matriz[i] = malloc(sizeof(int) * col);
+  return matriz;
+}
+
+void conta_vizinhos(int **mundo, int **passado, int lin, int col)
+{
+  for (int i = 0; i < lin; i++)
+  {
+    for (int j = 0; j < col; j++)
+    {
+      int vizinhos = 0;
+      for (int k = 0; k < 3; k++)
+      {
+        for (int l = 0; l < 3; l++)
+        {
+          vizinhos += passado[(i + k + lin) % lin][(j + l + col) % col];
+        }
+      }
+      vizinhos -= passado[i][j];
+      if (vizinhos < 2 || vizinhos > 3)
+        mundo[i][j] = 0;
+      else if (vizinhos == 3)
+          mundo[i][j] == 1;
+        else
+          mundo[i][j] = passado[i][j];
+    }
+  }
+}
+
+void imprime_mundo(int **matriz, int lin, int col)
+{
+  for (int i = 0; i < lin; i++)
+    for (int j = 0; j < col; j++)
+      matriz[i][j] ? mvaddch(i, j, VIVO) : mvaddch(i, j, MORTO);
+}
+
+void copia_mundos(int **mundo, int **passado, int lin, int col)
+{
+  for (int i = 0; i < lin; i++)
+    for (int j = 0; j < col; j++)
+      passado[i][j] = mundo[i][j];
+}
+
+int main(int argc, char **argv)
+{
+  srand(time(NULL));
 
   /* Inicio de Tela do ncurses */
-  initscr ();
+  initscr();
 
   int **mundo, **passado;
   int col, lin;
 
   /* Descobre o tamanho do terminal */
-  getmaxyx (stdscr, lin, col);
-  printf ("%d %d\n", lin, col);
+  getmaxyx(stdscr, lin, col);
 
   /* Aloca as matrizes onde acontecerá o jogo */
-  mundo = malloc (sizeof (int *) * lin);
-  passado = malloc (sizeof (int *) * lin);
-  for (int i = 0; i < lin; i++)
-  {
-    mundo[i] = malloc (col * sizeof (int));
-    passado[i] = malloc (col * sizeof (int));
-  }
+  mundo = alocar_matriz(lin, col);
+  passado = alocar_matriz(lin, col);
 
   /* Constroi um mundo aleatório */
   for (int i = 0; i < lin; i++)
     for (int j = 0; j < col; j++)
-      passado[i][j] = rand () % 2;
-
+      passado[i][j] = rand() % 2;
 
   while (1)
   {
-    // int vizinhos_vivos = 0;
-    // /* Calcula o novo estado */
-    // for (int i = 0; i < lin; i++)
-    //   for (int j = 0; j < col; j++)
-    //   {
-    //     if (i < 1) /* primeira linha */
-    //     {
-    //       if (j < 1) /* canto superior esquerdo*/
-    //       {
-    //         vizinhos_vivos += passado[i+1][j];
-    //         vizinhos_vivos += passado[i+1][j+1];
-    //         vizinhos_vivos += passado[i][j+1];
-    //       }
-    //       if (j > col-2) /* canto superior direito */
-    //       {
-    //         vizinhos_vivos += passado[i][j-1];
-    //         vizinhos_vivos += passado[i+1][j-1];
-    //         vizinhos_vivos += passado[i+1][j];
-    //       }
-    //     }
-    
-    for (int i = 0; i < lin; i++)
-    {
-      for (int j = 0; j < col; j++)
-      {
-        int vizinhos = 0;
-        for (int k = -1; k < 2; k++)
-        {
-          for (int l = -1; l < 2; l++)
-          {
-            if ()
-          }
-        }
-      }
-    }
-
-    }
-
-  /* Imprime o mundo */
-    for (int i = 0; i < lin; i++)
-      for (int j = 0; j < col; j++)
-        mundo[i][j] ? mvaddch (i, j, VIVO) : mvaddch (i, j, MORTO);
-
-    
-    refresh ();
+    // Conta vizinhos
+    conta_vizinhos(mundo, passado, lin, col);
+    copia_mundos(mundo, passado, lin, col);
+    imprime_mundo(passado, lin, col);
+    refresh();
   }
 
+  getch();
 
   /* Encerra o ncurses */
-  endwin ();
+  endwin();
   return 0;
 }

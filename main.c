@@ -23,17 +23,19 @@ void conta_vizinhos(int **mundo, int **passado, int lin, int col)
     for (int j = 0; j < col; j++)
     {
       int vizinhos = 0;
-      for (int k = 0; k < 3; k++)
+      for (int k = -1; k < 2; k++)
       {
-        for (int l = 0; l < 3; l++)
+        for (int l = -1; l < 2; l++)
         {
           vizinhos += passado[(i + k + lin) % lin][(j + l + col) % col];
         }
       }
-      vizinhos -= passado[i][j];
-      if (vizinhos < 2 || vizinhos > 3)
+
+      //vizinhos -= passado[i][j];
+
+      if ((passado[i][j] == 1) && (vizinhos < 2 || vizinhos > 3))
         mundo[i][j] = 0;
-      else if (vizinhos == 3)
+      else if ((passado[i][j]  == 0) && (vizinhos == 3))
           mundo[i][j] == 1;
         else
           mundo[i][j] = passado[i][j];
@@ -66,7 +68,9 @@ int main(int argc, char **argv)
   int col, lin;
 
   /* Descobre o tamanho do terminal */
-  getmaxyx(stdscr, lin, col);
+  //getmaxyx(stdscr, lin, col);
+  lin = 10;
+  col = 10;
 
   /* Aloca as matrizes onde acontecerá o jogo */
   mundo = alocar_matriz(lin, col);
@@ -77,16 +81,16 @@ int main(int argc, char **argv)
     for (int j = 0; j < col; j++)
       passado[i][j] = rand() % 2;
 
+
   while (1)
   {
-    // Conta vizinhos
+    imprime_mundo(passado, lin, col);
     conta_vizinhos(mundo, passado, lin, col);
     copia_mundos(mundo, passado, lin, col);
-    imprime_mundo(passado, lin, col);
+    getch();
     refresh();
   }
 
-  getch();
 
   /* Encerra o ncurses */
   endwin();

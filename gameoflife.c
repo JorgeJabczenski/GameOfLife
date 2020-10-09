@@ -94,7 +94,7 @@ main (int argc, char **argv)
       conta_vizinhos (mundo, passado, lin, col);
       copia_mundos (mundo, passado, lin, col);
       refresh ();
-	  usleep(330000);
+	  usleep(33000);
     }
 
 

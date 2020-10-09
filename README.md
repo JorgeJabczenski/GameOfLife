@@ -6,3 +6,4 @@
  - [ ] Aceitar tabuleiros pré-definidos (getopt)
  - [ ] Reiniciar automaticamente
  - [ ] Transformar em um screen-saver
+ - [ ] Separar em bibliotecas
